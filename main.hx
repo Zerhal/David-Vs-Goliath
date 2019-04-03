@@ -1,19 +1,33 @@
+import hxd.Key;
+
 class Main extends hxd.App {
-    var bmp : h2d.Bitmap;
-    override function init() {
-        // allocate a Texture with red color and creates a 100x100 Tile from it
-        var tile = h2d.Tile.fromColor(0xFF0000, 100, 100);
-        // create a Bitmap object, which will display the tile
-        // and will be added to our 2D scene (s2d)
-        bmp = new h2d.Bitmap(tile, s2d);
-        // modify the display position of the Bitmap sprite
-        bmp.x = s2d.width * 0.5;
-        bmp.y = s2d.height * 0.5;
+    var david : Personnage;
+    var goliath : Personnage;
+    override function init(){
+        
+        var armeDavide = new Arme("Epee en bois", 10);
+        // Cr�ation des personnages
+        david = new Personnage("David", 100, 100, armeDavide);
+        goliath = new Personnage("Golbut", 1000, 0, armeDavide);
+
+        // Au combat !
+       
+        
     }
     // on each frame
     override function update(dt:Float) {
-        // increment the display bitmap rotation by 0.1 radians
-        bmp.rotation += 0.1;
+
+        if (Key.isReleased(Key.UP)) {               
+            david.attaquer(goliath);
+        }
+         if (Key.isReleased(Key.DOWN)) {               
+            trace("David :");
+            trace(david.afficherEtat());
+            trace("Goliath");
+            trace(goliath.afficherEtat());
+        }
+        
+
     }
     static function main() {
         new Main();
