@@ -4,8 +4,10 @@ import hxd.Key;
 class Main extends hxd.App {
     var david : Personnage;
     var goliath : Personnage;
-    var temps : Int;
+    var xpProchainLvl : Int;
     var vieGoliath : Int;
+    var xpGoliath : Int;
+    var levelGoliath : Int;
     var epeeEnBois : Arme;
     var font : h2d.Font;
     var davidNom : Text;
@@ -19,6 +21,9 @@ class Main extends hxd.App {
         
         font = hxd.res.DefaultFont.get();        
         vieGoliath = 1000;
+        xpGoliath = 100;
+        levelGoliath = 1;
+        xpProchainLvl = 1000;
         
         // Titre
         var titre = new h2d.Text(font);
@@ -43,11 +48,11 @@ class Main extends hxd.App {
         // Creation des sorts
         var bouleDeFeu = new Sort("Boule de Feu", 100, 25);
         var eclaireDeGivre = new Sort("Eclaire de Givre", 500, 50);
-        var blackHole = new Sort ("Black Hole", 10000000, 100);
+        var blackHole = new Sort ("Black Hole", 10000000, 1);
 
         // Création des personnages
-        david = new Personnage("David", 100, 100, epeeEnBois);
-        goliath = new Personnage("Golbut", vieGoliath, 0, epeeEnBois);
+        david = new Personnage("David", 100, 100, epeeEnBois, 1);
+        goliath = new Personnage("Golbut", vieGoliath, 0, epeeEnBois, levelGoliath);
 
         david.addSort(bouleDeFeu);
         david.addSort(eclaireDeGivre);
@@ -59,7 +64,7 @@ class Main extends hxd.App {
 
         // Info David
         davidNom = new h2d.Text(font);
-        davidNom.text = david.getNom();
+        davidNom.text = david.getNom() + " lvl : " + david.getLvl();
         davidNom.textAlign = Center;
         davidNom.x = s2d.width * 0.2;
         davidNom.y = s2d.height * 0.6;
@@ -103,7 +108,7 @@ class Main extends hxd.App {
 
         // Info Goliath
         goliathInfo = new h2d.Text(font);
-        goliathInfo.text = goliath.getNom() + " | Vie : " + goliath.getVie();
+        goliathInfo.text = goliath.getNom() + " Lvl : " + goliath.getLvl() + " | Vie : " + goliath.getVie();
         goliathInfo.textAlign = Center;
         goliathInfo.x = s2d.width * 0.7;
         goliathInfo.y = s2d.height * 0.7;
@@ -112,8 +117,16 @@ class Main extends hxd.App {
     // on each frame
     override function update(dt:Float) { 
         if(goliath.getVie() <= 0){
+            if(david.getXp() < xpProchainLvl){
+                david.setXp(xpGoliath);
+            }else if(david.getXp() >= xpProchainLvl){
+                david.addLevel();
+                xpProchainLvl=xpProchainLvl*10;
+            }
             vieGoliath = vieGoliath*2;
-            goliath = new Personnage("Golbut", vieGoliath, 0, epeeEnBois);
+            levelGoliath++;
+            xpGoliath = xpGoliath*2;
+            goliath = new Personnage("Golbut", vieGoliath, 0, epeeEnBois, levelGoliath);
         }       
         if (Key.isReleased(Key.UP)) {               
             david.attaquer(goliath);
@@ -137,13 +150,13 @@ class Main extends hxd.App {
             david.manaRegen(1/120);
         }
 
-        davidNom.text = david.getNom();
+        davidNom.text =  david.getNom() + " lvl : " + david.getLvl();
         davidMana.text = " |  Mana : " + david.getManaActuelle() + "/" +  david.getMana();
         davidArme.text = " | Nom Arme Actuelle :  " + david.getArmeActuelle().getNom() + " | Deguat Arme Actuelle :  " + david.getArmeActuelle().getDegats();
         davidSort1.text = " | Nom Sort 1 : " + david.getSorts(0).getNom() + " | Degat Sort 1 : " + david.getSorts(0).getDegats() + " | Mana Cost Sort 1 : " + david.getSorts(0).getManaCost();
         davidSort2.text = " | Nom Sort 2 : " + david.getSorts(1).getNom() + " | Degat Sort 2 : " + david.getSorts(1).getDegats() + " | Mana Cost Sort 2 : " + david.getSorts(1).getManaCost();
         davidSort3.text = " | Nom Sort 3 : " + david.getSorts(2).getNom() + " | Degat Sort 3 : " + david.getSorts(2).getDegats() + " | Mana Cost Sort 3 : " + david.getSorts(2).getManaCost();
-        goliathInfo.text = goliath.getNom() + " | Vie : " + goliath.getVie();
+        goliathInfo.text = goliath.getNom() + " Lvl : " + goliath.getLvl() + " | Vie : " + goliath.getVie();
     }
     static function main() {
         new Main();

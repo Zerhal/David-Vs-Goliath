@@ -9,11 +9,14 @@ class Personnage{
     var armeActuelle : Arme;
     var armes : Array<Arme>;
     var sorts : Array<Sort>;
+    var xp : Int;
+    var level : Int;
 
-    public function new(nom : String, vie : Int, mana : Int, armeActuelle : Arme){
+    public function new(nom : String, vie : Int, mana : Int, armeActuelle : Arme, level : Int){
         this.nom = nom;
         this.vie = vie;
         this.mana = mana;
+        this.level = level;
         this.manaActuelle = mana;
         this.armeActuelle = armeActuelle;
         this.sorts = new Array();
@@ -55,6 +58,17 @@ class Personnage{
     public function getVie(){
         return this.vie;      
     }
+
+    public function getXp(){
+        return this.xp;
+    }
+
+    public function setXp(xp){
+        this.xp += xp;
+    }
+    public function getLvl(){
+        return this.level;
+    }
     
     public function getMana(){
         return this.mana;      
@@ -76,6 +90,10 @@ class Personnage{
         return this.sorts[i];      
     }
 
+    public function addLevel(){
+        this.level++;
+        this.changerArme("épee de la mort " + this.level, 50*this.level);
+    }
     public function addSort(sort){
         this.sorts.push(sort) ;      
     }

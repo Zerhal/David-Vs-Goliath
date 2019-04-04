@@ -289,6 +289,9 @@ Main.prototype = $extend(hxd_App.prototype,{
 	init: function() {
 		this.font = hxd_res_DefaultFont.get();
 		this.vieGoliath = 1000;
+		this.xpGoliath = 100;
+		this.levelGoliath = 1;
+		this.xpProchainLvl = 1000;
 		var titre = new h2d_Text(this.font);
 		titre.set_text("David vs Golbut");
 		titre.set_textAlign(h2d_Align.Center);
@@ -310,9 +313,9 @@ Main.prototype = $extend(hxd_App.prototype,{
 		var grandeHacheLegendaire = new Arme("Grande Hache Legandaire",5000);
 		var bouleDeFeu = new Sort("Boule de Feu",100,25);
 		var eclaireDeGivre = new Sort("Eclaire de Givre",500,50);
-		var blackHole = new Sort("Black Hole",10000000,100);
-		this.david = new Personnage("David",100,100,this.epeeEnBois);
-		this.goliath = new Personnage("Golbut",this.vieGoliath,0,this.epeeEnBois);
+		var blackHole = new Sort("Black Hole",10000000,1);
+		this.david = new Personnage("David",100,100,this.epeeEnBois,1);
+		this.goliath = new Personnage("Golbut",this.vieGoliath,0,this.epeeEnBois,this.levelGoliath);
 		this.david.addSort(bouleDeFeu);
 		this.david.addSort(eclaireDeGivre);
 		this.david.addSort(blackHole);
@@ -320,7 +323,7 @@ Main.prototype = $extend(hxd_App.prototype,{
 		this.david.addArme(epeeEnMetal);
 		this.david.addArme(grandeHacheLegendaire);
 		this.davidNom = new h2d_Text(this.font);
-		this.davidNom.set_text(this.david.getNom());
+		this.davidNom.set_text(this.david.getNom() + " lvl : " + this.david.getLvl());
 		this.davidNom.set_textAlign(h2d_Align.Center);
 		var _this = this.davidNom;
 		_this.posChanged = true;
@@ -380,7 +383,7 @@ Main.prototype = $extend(hxd_App.prototype,{
 		_this11.y = this.s2d.height * 0.85;
 		this.s2d.addChild(this.davidSort3);
 		this.goliathInfo = new h2d_Text(this.font);
-		this.goliathInfo.set_text(this.goliath.getNom() + " | Vie : " + this.goliath.getVie());
+		this.goliathInfo.set_text(this.goliath.getNom() + " Lvl : " + this.goliath.getLvl() + " | Vie : " + this.goliath.getVie());
 		this.goliathInfo.set_textAlign(h2d_Align.Center);
 		var _this12 = this.goliathInfo;
 		_this12.posChanged = true;
@@ -392,8 +395,16 @@ Main.prototype = $extend(hxd_App.prototype,{
 	}
 	,update: function(dt) {
 		if(this.goliath.getVie() <= 0) {
+			if(this.david.getXp() < this.xpProchainLvl) {
+				this.david.setXp(this.xpGoliath);
+			} else if(this.david.getXp() >= this.xpProchainLvl) {
+				this.david.addLevel();
+				this.xpProchainLvl *= 10;
+			}
 			this.vieGoliath *= 2;
-			this.goliath = new Personnage("Golbut",this.vieGoliath,0,this.epeeEnBois);
+			this.levelGoliath++;
+			this.xpGoliath *= 2;
+			this.goliath = new Personnage("Golbut",this.vieGoliath,0,this.epeeEnBois,this.levelGoliath);
 		}
 		if(hxd_Key.isReleased(38)) {
 			this.david.attaquer(this.goliath);
@@ -413,21 +424,22 @@ Main.prototype = $extend(hxd_App.prototype,{
 		if(this.david.getManaActuelle() < this.david.getMana()) {
 			this.david.manaRegen(0.0083333333333333332);
 		}
-		this.davidNom.set_text(this.david.getNom());
+		this.davidNom.set_text(this.david.getNom() + " lvl : " + this.david.getLvl());
 		this.davidMana.set_text(" |  Mana : " + this.david.getManaActuelle() + "/" + this.david.getMana());
 		this.davidArme.set_text(" | Nom Arme Actuelle :  " + this.david.getArmeActuelle().getNom() + " | Deguat Arme Actuelle :  " + this.david.getArmeActuelle().getDegats());
 		this.davidSort1.set_text(" | Nom Sort 1 : " + this.david.getSorts(0).getNom() + " | Degat Sort 1 : " + this.david.getSorts(0).getDegats() + " | Mana Cost Sort 1 : " + this.david.getSorts(0).getManaCost());
 		this.davidSort2.set_text(" | Nom Sort 2 : " + this.david.getSorts(1).getNom() + " | Degat Sort 2 : " + this.david.getSorts(1).getDegats() + " | Mana Cost Sort 2 : " + this.david.getSorts(1).getManaCost());
 		this.davidSort3.set_text(" | Nom Sort 3 : " + this.david.getSorts(2).getNom() + " | Degat Sort 3 : " + this.david.getSorts(2).getDegats() + " | Mana Cost Sort 3 : " + this.david.getSorts(2).getManaCost());
-		this.goliathInfo.set_text(this.goliath.getNom() + " | Vie : " + this.goliath.getVie());
+		this.goliathInfo.set_text(this.goliath.getNom() + " Lvl : " + this.goliath.getLvl() + " | Vie : " + this.goliath.getVie());
 	}
 	,__class__: Main
 });
 Math.__name__ = "Math";
-var Personnage = function(nom,vie,mana,armeActuelle) {
+var Personnage = function(nom,vie,mana,armeActuelle,level) {
 	this.nom = nom;
 	this.vie = vie;
 	this.mana = mana;
+	this.level = level;
 	this.manaActuelle = mana;
 	this.armeActuelle = armeActuelle;
 	this.sorts = [];
@@ -462,6 +474,15 @@ Personnage.prototype = {
 	,getVie: function() {
 		return this.vie;
 	}
+	,getXp: function() {
+		return this.xp;
+	}
+	,setXp: function(xp) {
+		this.xp += xp;
+	}
+	,getLvl: function() {
+		return this.level;
+	}
 	,getMana: function() {
 		return this.mana;
 	}
@@ -476,6 +497,10 @@ Personnage.prototype = {
 	}
 	,getSorts: function(i) {
 		return this.sorts[i];
+	}
+	,addLevel: function() {
+		this.level++;
+		this.changerArme("épee de la mort " + this.level,50 * this.level);
 	}
 	,addSort: function(sort) {
 		this.sorts.push(sort);
