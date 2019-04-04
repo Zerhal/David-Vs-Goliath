@@ -1,7 +1,3 @@
-import hxd.App;
-import h2d.Text;
-import h2d.Font;
-
 class Arme{
 
     var nom : String;
@@ -11,16 +7,12 @@ class Arme{
         this.nom = nom;
         this.degats = degats;
     }
-    
-    public function afficher(){
-        var titre = new Text(hxd.res.DefaultFont.get());
-        titre.text = "PONG";
-        titre.textAlign = Center;      
+
+    public function getNom(){
+        return this.nom;
     }
 
     public function getDegats(){
         return this.degats;
     }
- 
-    
 }
