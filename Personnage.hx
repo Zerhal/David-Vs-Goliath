@@ -22,6 +22,7 @@ class Personnage{
         this.sorts = new Array();
         this.armes = new Array();
         this.armes.push(armeActuelle);
+        this.xp = 0;
     }
 
     public function recevoirDegats(nbDegats : Int){

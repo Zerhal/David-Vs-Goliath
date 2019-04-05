@@ -53,6 +53,7 @@ class Main extends hxd.App {
         // Création des personnages
         david = new Personnage("David", 100, 100, epeeEnBois, 1);
         goliath = new Personnage("Golbut", vieGoliath, 0, epeeEnBois, levelGoliath);
+        david.setXp(0);
 
         david.addSort(bouleDeFeu);
         david.addSort(eclaireDeGivre);
@@ -116,6 +117,8 @@ class Main extends hxd.App {
     }
     // on each frame
     override function update(dt:Float) { 
+
+        //Si  Goliath meurt
         if(goliath.getVie() <= 0){
             if(david.getXp() < xpProchainLvl){
                 david.setXp(xpGoliath);
